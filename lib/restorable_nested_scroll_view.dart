@@ -379,19 +379,11 @@ class NestedScrollViewState extends State<NestedScrollView> {
   @override
   void initState() {
     super.initState();
-
-    double? innerScrollOffset;
-    if (widget.key is PageStorageKey) {
-      innerScrollOffset =
-          PageStorage.of(context).readState(context, identifier: widget.key);
-    }
-
     _coordinator = _NestedScrollCoordinator(
       this,
       widget.controller,
       _handleHasScrolledBodyChanged,
       widget.floatHeaderSlivers,
-      innerScrollOffset,
     );
   }
 
@@ -575,7 +567,6 @@ class _NestedScrollCoordinator
     this._parent,
     this._onHasScrolledBodyChanged,
     this._floatHeaderSlivers,
-    double? innerScrollOffset,
   ) {
     final double initialScrollOffset = _parent?.initialScrollOffset ?? 0.0;
     _outerController = _NestedScrollController(
@@ -585,7 +576,7 @@ class _NestedScrollCoordinator
     );
     _innerController = _NestedScrollController(
       this,
-      initialScrollOffset: innerScrollOffset ?? 0.0,
+      shouldRestore: true,
       debugLabel: 'inner',
     );
   }
@@ -1148,11 +1139,13 @@ class _NestedScrollCoordinator
 class _NestedScrollController extends ScrollController {
   _NestedScrollController(
     this.coordinator, {
+    this.shouldRestore = false,
     super.initialScrollOffset,
     super.debugLabel,
   });
 
   final _NestedScrollCoordinator coordinator;
+  final bool shouldRestore;
 
   @override
   ScrollPosition createScrollPosition(
@@ -1162,6 +1155,7 @@ class _NestedScrollController extends ScrollController {
   ) {
     return _NestedScrollPosition(
       coordinator: coordinator,
+      shouldRestore: shouldRestore,
       physics: physics,
       context: context,
       initialPixels: initialScrollOffset,
@@ -1214,14 +1208,14 @@ class _NestedScrollController extends ScrollController {
 // this class, they can defer, or be influenced by, the coordinator.
 class _NestedScrollPosition extends ScrollPosition
     implements ScrollActivityDelegate {
-  _NestedScrollPosition({
-    required super.physics,
-    required super.context,
-    double initialPixels = 0.0,
-    super.oldPosition,
-    super.debugLabel,
-    required this.coordinator,
-  }) {
+  _NestedScrollPosition(
+      {required super.physics,
+      required super.context,
+      double initialPixels = 0.0,
+      super.oldPosition,
+      super.debugLabel,
+      required this.coordinator,
+      required this.shouldRestore}) {
     if (!hasPixels) {
       correctPixels(initialPixels);
     }
@@ -1233,6 +1227,7 @@ class _NestedScrollPosition extends ScrollPosition
   }
 
   final _NestedScrollCoordinator coordinator;
+  final bool shouldRestore;
 
   TickerProvider get vsync => context.vsync;
 
@@ -1255,7 +1250,7 @@ class _NestedScrollPosition extends ScrollPosition
 
   @override
   void restoreScrollOffset() {
-    if (coordinator.canScrollBody) {
+    if (shouldRestore) {
       super.restoreScrollOffset();
     }
   }
