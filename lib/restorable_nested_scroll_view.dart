@@ -379,11 +379,19 @@ class NestedScrollViewState extends State<NestedScrollView> {
   @override
   void initState() {
     super.initState();
+
+    double? innerScrollOffset;
+    if (widget.key is PageStorageKey) {
+      innerScrollOffset =
+          PageStorage.of(context).readState(context, identifier: widget.key);
+    }
+
     _coordinator = _NestedScrollCoordinator(
       this,
       widget.controller,
       _handleHasScrolledBodyChanged,
       widget.floatHeaderSlivers,
+      innerScrollOffset,
     );
   }
 
@@ -567,6 +575,7 @@ class _NestedScrollCoordinator
     this._parent,
     this._onHasScrolledBodyChanged,
     this._floatHeaderSlivers,
+    double? innerScrollOffset,
   ) {
     final double initialScrollOffset = _parent?.initialScrollOffset ?? 0.0;
     _outerController = _NestedScrollController(
@@ -576,6 +585,7 @@ class _NestedScrollCoordinator
     );
     _innerController = _NestedScrollController(
       this,
+      initialScrollOffset: innerScrollOffset ?? 0.0,
       debugLabel: 'inner',
     );
   }
