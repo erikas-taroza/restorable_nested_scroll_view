@@ -374,6 +374,11 @@ class NestedScrollViewState extends State<NestedScrollView> {
 
   _NestedScrollCoordinator? _coordinator;
 
+  void storeAccuratePosition() {
+    final bucket = PageStorage.of(context);
+    bucket.writeState(context, innerController.offset);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -383,6 +388,8 @@ class NestedScrollViewState extends State<NestedScrollView> {
       _handleHasScrolledBodyChanged,
       widget.floatHeaderSlivers,
     );
+
+    innerController.addListener(storeAccuratePosition);
   }
 
   @override
@@ -401,6 +408,7 @@ class NestedScrollViewState extends State<NestedScrollView> {
 
   @override
   void dispose() {
+    innerController.removeListener(storeAccuratePosition);
     _coordinator!.dispose();
     _coordinator = null;
     super.dispose();
