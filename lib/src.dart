@@ -1386,14 +1386,14 @@ class _NestedScrollPosition extends ScrollPosition
   // ballistic.
   @override
   void goBallistic(double velocity) {
-    Simulation? simulation;
-    if (velocity != 0.0 || outOfRange) {
-      simulation = physics.createBallisticSimulation(this, velocity);
-    }
-    beginActivity(createBallisticScrollActivity(
-      simulation,
-      mode: _NestedBallisticScrollActivityMode.independent,
-    ));
+    // Simulation? simulation;
+    // if (velocity != 0.0 || outOfRange) {
+    //   simulation = physics.createBallisticSimulation(this, velocity);
+    // }
+    // beginActivity(createBallisticScrollActivity(
+    //   simulation,
+    //   mode: _NestedBallisticScrollActivityMode.independent,
+    // ));
   }
 
   ScrollActivity createBallisticScrollActivity(
