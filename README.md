@@ -30,7 +30,10 @@ restorable.NestedScrollView(
             context,
           ),
         ),
-        widget.child
+        SliverFixedExtentList.builder(
+          itemBuilder: (_, i) => Text("$i"),
+          itemExtent: 50,
+        )
       ],
     ),
   ),
