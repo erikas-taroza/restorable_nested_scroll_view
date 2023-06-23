@@ -1221,7 +1221,7 @@ class _NestedScrollPosition extends ScrollPosition
       goIdle();
     }
     assert(activity != null);
-    saveScrollOffset(); // in case we didn't restore but could, so that we don't restore it later
+    //saveScrollOffset(); // in case we didn't restore but could, so that we don't restore it later
   }
 
   final _NestedScrollCoordinator coordinator;
